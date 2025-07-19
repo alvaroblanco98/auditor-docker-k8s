@@ -1,5 +1,6 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.routers import scan  # Importa el router desde app/routers/scan.py
 
 app = FastAPI(
     title="Auditor Docker/K8s",
@@ -7,7 +8,7 @@ app = FastAPI(
     version="0.1.0"
 )
 
-# CORS para frontend local
+# Middleware CORS para permitir conexión desde React frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -20,13 +21,6 @@ app.add_middleware(
 def root():
     return {"message": "API Auditor Docker/K8s"}
 
-@app.post("/scan/")
-async def scan_config(file: UploadFile = File(...)):
-    # Aquí más adelante llamarás a hadolint, trivy, kube-linter, etc.
-    filename = file.filename
-    content = await file.read()
-    return {
-        "filename": filename,
-        "status": "Análisis pendiente",
-        "lines": len(content.decode().splitlines())
-    }
+# Incluir rutas del archivo scan.py
+app.include_router(scan.router)
+
