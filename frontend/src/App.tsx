@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
 function App() {
   const [file, setFile] = useState<File | null>(null);
@@ -11,7 +11,7 @@ function App() {
 
     const res = await fetch("http://localhost:8000/scan/", {
       method: "POST",
-      body: formData,
+      body: formData
     });
 
     const data = await res.json();
@@ -19,15 +19,18 @@ function App() {
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-xl font-bold">Auditor Docker / Kubernetes</h1>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">Auditor Docker/K8s</h1>
       <input type="file" onChange={e => setFile(e.target.files?.[0] || null)} />
-      <button onClick={handleUpload} className="bg-blue-500 text-white px-4 py-2 ml-2">Subir</button>
+      <button className="ml-4 bg-blue-600 text-white px-4 py-2 rounded" onClick={handleUpload}>
+        Subir y analizar
+      </button>
       {response && (
-        <pre className="mt-4 bg-gray-100 p-4 rounded">{JSON.stringify(response, null, 2)}</pre>
+        <pre className="mt-6 bg-gray-100 p-4 rounded">{JSON.stringify(response, null, 2)}</pre>
       )}
     </div>
   );
 }
 
 export default App;
+
