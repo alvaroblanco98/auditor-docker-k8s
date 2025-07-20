@@ -20,7 +20,7 @@ async def scan_file(file: UploadFile = File(...)):
 
         if "Dockerfile" in filename or filename.endswith(".Dockerfile"):
             output = subprocess.run(
-                ["hadolint", "-f", "json", tmp.name],
+                ["hadolint", "--format", "json", tmp.name],
                 capture_output=True, text=True
             )
             try:
@@ -30,13 +30,13 @@ async def scan_file(file: UploadFile = File(...)):
 
         elif "docker-compose" in filename or filename.endswith("compose.yaml"):
             output = subprocess.run(
-                ["trivy", "-c", "-f", "json", tmp.name],
+                ["dclint", "--formatter", "json", tmp.name],
                 capture_output=True, text=True
             )
             try:
-                results["hadolint"] = json.loads(output.stdout)
+                results["dclint"] = json.loads(output.stdout)
             except json.JSONDecodeError:
-                results["hadolint"] = {"error": "Error parsing hadolint output"}
+                results["dclint"] = {"error": "Error parsing dclint output"}
 
         elif filename.endswith(".yaml") or filename.endswith(".yml"):
             output = subprocess.run(
