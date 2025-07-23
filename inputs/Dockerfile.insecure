@@ -1,5 +1,7 @@
-FROM python:3.11
-RUN pip install flask
-EXPOSE 80
-USER root
-CMD ["python3", "app.py"]
+FROM alpine:3.10
+
+# Instala curl sin versión fijada ni --no-cache
+RUN apk add curl
+
+# Ejecuta como root (por defecto)
+CMD ["sh"]
