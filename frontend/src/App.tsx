@@ -22,15 +22,55 @@ function App() {
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Auditor Docker/K8s</h1>
       <input type="file" onChange={e => setFile(e.target.files?.[0] || null)} />
-      <button className="ml-4 bg-blue-600 text-white px-4 py-2 rounded" onClick={handleUpload}>
+      <button
+        className="ml-4 bg-blue-600 text-white px-4 py-2 rounded"
+        onClick={handleUpload}
+      >
         Subir y analizar
       </button>
+
       {response && (
-        <pre className="mt-6 bg-gray-100 p-4 rounded">{JSON.stringify(response, null, 2)}</pre>
+        <div className="mt-6">
+          <h2 className="text-lg font-semibold mb-2">Archivo: {response.filename}</h2>
+
+          {Object.entries(response.results).map(([tool, findings]) => (
+            <div key={tool} className="mb-8">
+              <h3 className="text-xl font-bold mb-2">{tool.toUpperCase()}</h3>
+
+              {Array.isArray(findings) && findings.length > 0 ? (
+                <div className="overflow-auto">
+                  <table className="min-w-full text-sm border border-gray-300 rounded">
+                    <thead className="bg-gray-100">
+                      <tr>
+                        {Object.keys(findings[0]).map((col) => (
+                          <th key={col} className="text-left p-2 border-b border-gray-300">
+                            {col}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {findings.map((item, index) => (
+                        <tr key={index} className="border-b">
+                          {Object.values(item).map((val, i) => (
+                            <td key={i} className="p-2 align-top whitespace-pre-wrap">
+                              {typeof val === "string" ? val : JSON.stringify(val)}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p className="text-gray-500 italic">No se encontraron problemas.</p>
+              )}
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
 }
 
 export default App;
-
