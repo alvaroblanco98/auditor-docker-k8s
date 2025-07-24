@@ -33,6 +33,13 @@ function App() {
         <div className="mt-6">
           <h2 className="text-lg font-semibold mb-2">Archivo: {response.filename}</h2>
 
+          <div className="mb-6">
+            <h3 className="text-md font-semibold">Contenido original</h3>
+            <pre className="bg-gray-100 p-4 rounded text-sm whitespace-pre-wrap overflow-auto max-h-64">
+              {response.original_content}
+            </pre>
+          </div>
+
           {Object.entries(response.results).map(([tool, findings]) => (
             <div key={tool} className="mb-8">
               <h3 className="text-xl font-bold mb-2">{tool.toUpperCase()}</h3>

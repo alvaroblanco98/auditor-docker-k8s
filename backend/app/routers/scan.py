@@ -27,6 +27,7 @@ async def scan_file(file: UploadFile = File(...)):
         tmp.flush()
 
         decoded_content = content.decode()
+        original_content = decoded_content
         results = {}
 
         if "Dockerfile" in filename or filename.endswith(".Dockerfile"):
@@ -59,7 +60,6 @@ async def scan_file(file: UploadFile = File(...)):
             except json.JSONDecodeError:
                 results["kube-linter"] = {"error": "Error parsing kube-linter output"}
 
-        # --- TRIVY (extrae imagen del contenido del archivo y escanea) ---
         image = extract_image_name(filename, decoded_content)
         if image:
             output = subprocess.run(
@@ -88,6 +88,7 @@ async def scan_file(file: UploadFile = File(...)):
 
         return {
             "filename": filename,
+            "original_content": original_content,
             "tools_run": list(results.keys()),
             "results": results
         }
