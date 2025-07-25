@@ -4,6 +4,12 @@ import tempfile
 import os
 import json
 import re
+from app.utils.parsers import (
+    normalize_hadolint,
+    normalize_trivy,
+    normalize_kubelinter,
+    normalize_dclint,
+)
 
 router = APIRouter()
 
@@ -86,9 +92,20 @@ async def scan_file(file: UploadFile = File(...)):
 
         os.unlink(tmp.name)
 
+        normalized = []
+        if "hadolint" in results and isinstance(results["hadolint"], list):
+            normalized += normalize_hadolint(results["hadolint"], filename)
+        if "trivy" in results and isinstance(results["trivy"], list):
+            normalized += normalize_trivy(results["trivy"], filename)
+        if "kube-linter" in results and isinstance(results["kube-linter"], dict):
+            normalized += normalize_kubelinter(results["kube-linter"], filename)
+        if "dclint" in results and isinstance(results["dclint"], list):
+            normalized += normalize_dclint(results["dclint"], filename)
+
         return {
             "filename": filename,
-            "original_content": original_content,
+            "original_content": decoded_content,
             "tools_run": list(results.keys()),
-            "results": results
+            "results": results,
+            "normalized_findings": normalized
         }

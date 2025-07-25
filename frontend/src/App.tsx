@@ -40,40 +40,56 @@ function App() {
             </pre>
           </div>
 
-          {Object.entries(response.results).map(([tool, findings]) => (
-            <div key={tool} className="mb-8">
-              <h3 className="text-xl font-bold mb-2">{tool.toUpperCase()}</h3>
+          <div className="mb-6">
+            <h3 className="text-md font-semibold">Vulnerabilidades detectadas</h3>
 
-              {Array.isArray(findings) && findings.length > 0 ? (
-                <div className="overflow-auto">
-                  <table className="min-w-full text-sm border border-gray-300 rounded">
-                    <thead className="bg-gray-100">
-                      <tr>
-                        {Object.keys(findings[0]).map((col) => (
-                          <th key={col} className="text-left p-2 border-b border-gray-300">
-                            {col}
-                          </th>
-                        ))}
+            {response.normalized_findings.length === 0 ? (
+              <p className="text-gray-500 italic">No se encontraron problemas.</p>
+            ) : (
+              <div className="overflow-auto">
+                <table className="min-w-full text-sm border border-gray-300 rounded">
+                  <thead className="bg-gray-100">
+                    <tr>
+                      <th className="p-2 border-b">Tool</th>
+                      <th className="p-2 border-b">File</th>
+                      <th className="p-2 border-b">Line</th>
+                      <th className="p-2 border-b">Rule / CVE</th>
+                      <th className="p-2 border-b">Severity</th>
+                      <th className="p-2 border-b">Message</th>
+                      <th className="p-2 border-b">Fix</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {response.normalized_findings.map((item: any, i: number) => (
+                      <tr key={i} className="border-b">
+                        <td className="p-2 align-top">{item.tool}</td>
+                        <td className="p-2 align-top">{item.file}</td>
+                        <td className="p-2 align-top">{item.line ?? "-"}</td>
+                        <td className="p-2 align-top">{item.rule}</td>
+                        <td
+                          className={`p-2 align-top font-bold ${
+                            item.severity?.toLowerCase() === 'critical'
+                              ? 'text-red-600'
+                              : item.severity?.toLowerCase() === 'high'
+                              ? 'text-orange-600'
+                              : item.severity?.toLowerCase() === 'medium'
+                              ? 'text-yellow-600'
+                              : item.severity?.toLowerCase() === 'low'
+                              ? 'text-green-600'
+                              : 'text-gray-700'
+                          }`}
+                        >
+                          {item.severity}
+                        </td>
+                        <td className="p-2 align-top whitespace-pre-wrap">{item.message}</td>
+                        <td className="p-2 align-top">{item.fix ?? "-"}</td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      {findings.map((item, index) => (
-                        <tr key={index} className="border-b">
-                          {Object.values(item).map((val, i) => (
-                            <td key={i} className="p-2 align-top whitespace-pre-wrap">
-                              {typeof val === "string" ? val : JSON.stringify(val)}
-                            </td>
-                          ))}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <p className="text-gray-500 italic">No se encontraron problemas.</p>
-              )}
-            </div>
-          ))}
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
