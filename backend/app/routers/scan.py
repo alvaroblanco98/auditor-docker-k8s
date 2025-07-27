@@ -11,6 +11,11 @@ from app.utils.parsers import (
     normalize_dclint,
 )
 
+from app.utils.suggestions import (
+    suggest_remediations_dockerfile,
+    suggest_remediations_kubernetes_yaml,
+)   
+
 router = APIRouter()
 
 def extract_image_name(filename: str, content: str) -> str | None:
@@ -33,7 +38,13 @@ async def scan_file(file: UploadFile = File(...)):
         tmp.flush()
 
         decoded_content = content.decode()
-        original_content = decoded_content
+
+        suggested_content = None
+        if "Dockerfile" in filename or filename.endswith(".Dockerfile"):
+            suggested_content = suggest_remediations_dockerfile(decoded_content)
+        elif filename.endswith(".yaml") or filename.endswith(".yml"):
+            suggested_content = suggest_remediations_kubernetes_yaml(decoded_content)
+
         results = {}
 
         if "Dockerfile" in filename or filename.endswith(".Dockerfile"):
@@ -105,7 +116,8 @@ async def scan_file(file: UploadFile = File(...)):
         return {
             "filename": filename,
             "original_content": decoded_content,
+            "suggested_content": suggested_content,
             "tools_run": list(results.keys()),
             "results": results,
-            "normalized_findings": normalized
+            "normalized_findings": normalized          
         }

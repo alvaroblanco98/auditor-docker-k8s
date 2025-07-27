@@ -17,5 +17,3 @@ spec:
         image: nginx:latest
         ports:
         - containerPort: 80
-        securityContext:
-          privileged: true
