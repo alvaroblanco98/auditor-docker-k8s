@@ -35,20 +35,20 @@ function App() {
         <div className="mt-6">
           <h2 className="text-lg font-semibold mb-2">Archivo: {response.filename}</h2>
 
-        <div className="mb-6">
-          <h3 className="text-md font-semibold mb-2">Diferencias entre configuración original y sugerida</h3>
-          <div className="border rounded shadow overflow-auto">
-            <ReactDiffViewer
-              oldValue={response.original_content}
-              newValue={response.suggested_content || ''}
-              splitView={true}
-              compareMethod={DiffMethod.LINES}
-              showDiffOnly={false}
-              leftTitle="Original"
-              rightTitle="Sugerido"
-            />
+          <div className="mb-6">
+            <h3 className="text-md font-semibold mb-2">Diferencias entre configuración original y sugerida</h3>
+            <div className="border rounded shadow overflow-auto">
+              <ReactDiffViewer
+                oldValue={response.original_content}
+                newValue={response.suggested_content || ''}
+                splitView={true}
+                compareMethod={DiffMethod.LINES}
+                showDiffOnly={false}
+                leftTitle="Original"
+                rightTitle="Sugerido"
+              />
+            </div>
           </div>
-        </div>
 
           <div className="mb-6">
             <h3 className="text-md font-semibold">Vulnerabilidades detectadas</h3>
