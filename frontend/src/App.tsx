@@ -79,6 +79,13 @@ function App() {
                   rightTitle="Sugerido"
                 />
               </div>
+              <a
+                href={`data:text/plain;charset=utf-8,${encodeURIComponent(response.suggested_content)}`}
+                download={`remediado-${response.filename}`}
+                className="inline-block bg-green-600 text-white px-4 py-2 rounded mt-4"
+              >
+                Descargar versión remediada
+              </a>
             </div>
           )}
 
