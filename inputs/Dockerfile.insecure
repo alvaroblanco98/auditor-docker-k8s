@@ -1,7 +1,9 @@
-FROM alpine:3.10
+FROM node:latest
 
 # Instala curl sin versión fijada ni --no-cache
 RUN apk add curl
+
+USER root
 
 # Ejecuta como root (por defecto)
 CMD ["sh"]

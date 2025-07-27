@@ -34,10 +34,21 @@ function App() {
           <h2 className="text-lg font-semibold mb-2">Archivo: {response.filename}</h2>
 
           <div className="mb-6">
-            <h3 className="text-md font-semibold">Contenido original</h3>
-            <pre className="bg-gray-100 p-4 rounded text-sm whitespace-pre-wrap overflow-auto max-h-64">
-              {response.original_content}
-            </pre>
+            <h3 className="text-md font-semibold mb-2">Comparación: original vs sugerido</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <h4 className="font-semibold text-sm text-gray-700 mb-1">Original</h4>
+                <pre className="bg-gray-100 p-4 rounded text-sm whitespace-pre-wrap overflow-auto max-h-96">
+                  {response.original_content}
+                </pre>
+              </div>
+              <div>
+                <h4 className="font-semibold text-sm text-gray-700 mb-1">Sugerido</h4>
+                <pre className="bg-green-50 p-4 rounded text-sm whitespace-pre-wrap overflow-auto max-h-96 border border-green-300">
+                  {response.suggested_content || "No se han generado sugerencias."}
+                </pre>
+              </div>
+            </div>
           </div>
 
           <div className="mb-6">
