@@ -7,6 +7,7 @@ function App() {
   const [response, setResponse] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [severityFilter, setSeverityFilter] = useState<string>("all");
 
   const handleUpload = async () => {
     if (!file) return;
@@ -35,6 +36,11 @@ function App() {
       setLoading(false);
     }
   };
+
+  const filteredFindings = response?.normalized_findings?.filter((item: any) => {
+    if (severityFilter === "all") return true;
+    return item.severity?.toLowerCase() === severityFilter;
+  }) || [];
 
   return (
     <div className="p-6">
@@ -91,8 +97,26 @@ function App() {
 
           <div className="mb-6">
             <h3 className="text-md font-semibold mb-2">Vulnerabilidades detectadas</h3>
-            {response.normalized_findings.length === 0 ? (
-              <p className="text-gray-500 italic">No se encontraron problemas.</p>
+
+            {/* Filtro de severidad */}
+            <div className="mb-4">
+              <label className="text-sm font-medium text-gray-700 mr-2">Filtrar por severidad:</label>
+              <select
+                value={severityFilter}
+                onChange={e => setSeverityFilter(e.target.value)}
+                className="border rounded px-2 py-1 text-sm"
+              >
+                <option value="all">Todas</option>
+                <option value="critical">Critical</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+                <option value="unknown">Unknown</option>
+              </select>
+            </div>
+
+            {filteredFindings.length === 0 ? (
+              <p className="text-gray-500 italic">No se encontraron problemas con esta severidad.</p>
             ) : (
               <div className="overflow-auto">
                 <table className="min-w-full text-sm border border-gray-300 rounded">
@@ -108,7 +132,7 @@ function App() {
                     </tr>
                   </thead>
                   <tbody>
-                    {response.normalized_findings.map((item: any, i: number) => (
+                    {filteredFindings.map((item: any, i: number) => (
                       <tr key={i} className="border-b">
                         <td className="p-2 align-top">{item.tool}</td>
                         <td className="p-2 align-top">{item.file}</td>
