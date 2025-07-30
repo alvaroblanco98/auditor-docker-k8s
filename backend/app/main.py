@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import scan  # Importa el router desde app/routers/scan.py
+from app.routers import scan, history
 
 app = FastAPI(
     title="Auditor Docker/K8s",
@@ -21,6 +21,6 @@ app.add_middleware(
 def root():
     return {"message": "API Auditor Docker/K8s"}
 
-# Incluir rutas del archivo scan.py
-app.include_router(scan.router)
 
+app.include_router(scan.router)
+app.include_router(history.router)
