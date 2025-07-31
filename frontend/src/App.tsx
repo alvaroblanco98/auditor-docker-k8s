@@ -130,6 +130,13 @@ function App() {
               >
                 Descargar versión remediada
               </a>
+              <a
+                href={`data:application/json;charset=utf-8,${encodeURIComponent(JSON.stringify(dataToDisplay, null, 2))}`}
+                download={`analisis-${dataToDisplay.filename}.json`}
+                className="inline-block bg-blue-600 text-white px-4 py-2 rounded mt-2 ml-4"
+              >
+              Exportar análisis completo (.json)
+              </a>
             </div>
           )}
 
