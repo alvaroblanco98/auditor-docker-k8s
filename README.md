@@ -36,47 +36,50 @@ El objetivo es mejorar la seguridad y cumplimiento de buenas prácticas en entor
 
 ## Instalación y ejecución
 
-### Requisitos
+- **Requisitos**:
 
-    - [Docker](https://docs.docker.com/engine/install/) y [docker-compose](https://docs.docker.com/compose/install/linux/#install-the-plugin-manually) instalados.
+    - [Docker](https://docs.docker.com/engine/install/)
+    - [docker-compose](https://docs.docker.com/compose/install/linux/#install-the-plugin-manually)
 
-### Pasos
-
-1. Clonar repositorio:
-git clone https://github.com/alvaroblanco98/auditor-docker-k8s.git
-cd auditor-docker-k8s
-2. Construir y levantar los contenedores:
-docker compose up --build
-3. Acceder al dashboard:
-http://localhost:3000
+- **Pasos**:
+    - Clonar repositorio:
+        - git clone https://github.com/alvaroblanco98/auditor-docker-k8s.git
+        - cd auditor-docker-k8s
+    - Construir y levantar los contenedores:
+        - docker compose up --build
+    - Acceder al dashboard:
+        - http://localhost:3000
 
 ## Estructura del proyecto
 
+```text
+AUDITOR-DOCKER-K8S
 ├── backend/
-│ ├── app/
-│ │ ├── main.py           # Punto de entrada FastAPI
-│ │ ├── routers/
-│ │ │ ├── scan.py         # Endpoint principal de análisis
-│ │ │ └── history.py      # Endpoint para historial
-│ │ ├── utils/
-│ │ │ ├── parsers.py      # Normalización de resultados
-│ │ │ ├── suggestions.py  # Generación de remediaciones sugeridas
-│ │ │ └── storage.py      # Persistencia (JSON local)
-│ ├── Dockerfile          # Docker backend
-│ └── requirements.txt    # Dependencias Python
+│   ├── app/
+│   │   ├── main.py                   # Punto de entrada FastAPI
+│   │   ├── routers/
+│   │   │   ├── scan.py               # Endpoint de análisis
+│   │   │   └── history.py            # Endpoint para historial
+│   │   ├── utils/
+│   │   │   ├── parsers.py            # Normalización de resultados
+│   │   │   ├── suggestions.py        # Remediaciones sugeridas
+│   │   │   └── storage.py            # Persistencia en JSON
+│   ├── Dockerfile                    # Dockerfile del backend
+│   └── requirements.txt              # Dependencias de Python
 ├── frontend/
-│ ├── Dockerfile          # Docker frontend
-│ ├── package.json        # Dependencias React
-│ ├── public/
-│ │ └── index.html
-│ └── src/
-│ ├── App.tsx             # Componente principal del dashboard
-│ └── index.tsx           # Renderización React
+│   ├── Dockerfile                    # Dockerfile del frontend React
+│   ├── package.json                  # Dependencias y scripts de React
+│   ├── public/
+│   │   └── index.html
+│   └── src/
+│       ├── App.tsx                   # Componente principal del dashboard
+│       └── index.tsx                 # Punto de entrada React
 ├── inputs/
-│ ├── Dockerfile.insecure # Ejemplo vulnerable (pruebas)
-│ ├── docker-compose.yaml # Ejemplo de docker-compose
-│ └── deployment.yaml     # Ejemplo de manifiesto K8s
-├── docker-compose.yml    # Orquestador para backend + frontend
+│   ├── Dockerfile.insecure           # Dockerfile vulnerable para pruebas
+│   ├── docker-compose.yaml           # Ejemplo docker-compose vulnerable
+│   └── deployment.yaml               # Manifiesto de Kubernetes
+├── docker-compose.yml               # Orquestador de backend + frontend
 ├── .gitignore
 ├── LICENSE
-└── README.md
+└── 
+```
