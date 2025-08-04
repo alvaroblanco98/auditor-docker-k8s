@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ReactDiffViewer, { DiffMethod } from 'react-diff-viewer';
 import { AiOutlineLoading3Quarters, AiOutlineCheckCircle, AiOutlineCloseCircle } from 'react-icons/ai';
-import { FaBug } from 'react-icons/fa';
 
 function App() {
   const [file, setFile] = useState<File | null>(null);
