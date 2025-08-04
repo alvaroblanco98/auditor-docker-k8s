@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ReactDiffViewer, { DiffMethod } from 'react-diff-viewer';
+import { AiOutlineLoading3Quarters, AiOutlineCheckCircle, AiOutlineCloseCircle } from 'react-icons/ai';
+import { FaBug } from 'react-icons/fa';
 
 function App() {
   const [file, setFile] = useState<File | null>(null);
@@ -59,91 +61,116 @@ function App() {
     severityFilter === "all" ? true : item.severity?.toLowerCase() === severityFilter
   );
 
-  return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Auditor Docker/K8s</h1>
+return (
+    <div className="min-h-screen bg-gray-50 font-sans text-gray-800 px-4 py-6">
+      <header className="mb-6 border-b pb-4 flex items-center justify-between">
+        <h1 className="text-3xl font-bold text-blue-700 flex items-center gap-2">
+          <FaBug /> Docker & Kubernetes Auditor
+        </h1>
+      </header>
 
-      {loading && <p className="text-blue-600 mt-2">Analizando archivo...</p>}
-      {error && <p className="text-red-600 mt-2">{error}</p>}
-      {response && <p className="text-green-600 mt-2">Análisis completado correctamente</p>}
+      <div className="max-w-6xl mx-auto space-y-8">
 
-      {/* Formulario */}
-      <div className="flex items-center gap-4 mt-4 mb-6">
-        <input type="file" onChange={e => setFile(e.target.files?.[0] || null)} />
-        <button
-          className={`bg-blue-600 text-white px-4 py-2 rounded ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-          onClick={handleUpload}
-          disabled={loading}
-        >
-          {loading ? "Analizando..." : "Subir y analizar"}
-        </button>
-        {file && <span className="text-sm text-gray-600">{file.name}</span>}
-      </div>
-
-      {/* Historial */}
-      <div className="mb-8">
-        <h2 className="text-md font-semibold mb-2">Historial de análisis anteriores</h2>
-        {history.length === 0 ? (
-          <p className="text-gray-500 italic">No hay análisis guardados.</p>
-        ) : (
-          <ul className="list-disc pl-5 space-y-1">
-            {history.map((entry) => (
-              <li key={entry.id}>
-                <button
-                  onClick={() => {
-                    setSelectedEntry(entry);
-                    setResponse(null);
-                  }}
-                  className="text-blue-600 hover:underline text-sm"
-                >
-                  {new Date(entry.timestamp).toLocaleDateString()} — {entry.filename}
-                </button>
-              </li>
-            ))}
-          </ul>
+        {/* Estado del análisis */}
+        {loading && (
+          <div className="flex items-center text-blue-600 gap-2">
+            <AiOutlineLoading3Quarters className="animate-spin" />
+            <span>Analizando archivo...</span>
+          </div>
         )}
-      </div>
+        {error && (
+          <div className="flex items-center text-red-600 gap-2">
+            <AiOutlineCloseCircle />
+            <span>{error}</span>
+          </div>
+        )}
+        {response && (
+          <div className="flex items-center text-green-600 gap-2">
+            <AiOutlineCheckCircle />
+            <span>Análisis completado correctamente</span>
+          </div>
+        )}
 
-      {/* Resultados de análisis */}
-      {dataToDisplay && (
-        <div className="mt-6">
-          <h2 className="text-lg font-semibold mb-4">Archivo: {dataToDisplay.filename}</h2>
+        {/* Subida de archivo */}
+        <section className="bg-white p-6 rounded shadow">
+          <h2 className="text-xl font-semibold mb-4">📁 Subir nuevo archivo</h2>
+          <div className="flex items-center gap-4">
+            <input type="file" onChange={e => setFile(e.target.files?.[0] || null)} />
+            <button
+              className={`bg-blue-600 text-white px-4 py-2 rounded ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              onClick={handleUpload}
+              disabled={loading}
+            >
+              {loading ? "Analizando..." : "Subir y analizar"}
+            </button>
+            {file && <span className="text-sm text-gray-600">{file.name}</span>}
+          </div>
+        </section>
 
-          {dataToDisplay.suggested_content && (
-            <div className="mb-8">
-              <h3 className="text-md font-semibold mb-2">Diferencias entre configuración original y sugerida</h3>
-              <div className="border rounded shadow overflow-auto">
-                <ReactDiffViewer
-                  oldValue={dataToDisplay.original_content}
-                  newValue={dataToDisplay.suggested_content}
-                  splitView={true}
-                  compareMethod={DiffMethod.LINES}
-                  showDiffOnly={false}
-                  leftTitle="Original"
-                  rightTitle="Sugerido"
-                />
-              </div>
-              <a
-                href={`data:text/plain;charset=utf-8,${encodeURIComponent(dataToDisplay.suggested_content)}`}
-                download={`remediado-${dataToDisplay.filename}`}
-                className="inline-block bg-green-600 text-white px-4 py-2 rounded mt-4"
-              >
-                Descargar versión remediada
-              </a>
-              <a
-                href={`data:application/json;charset=utf-8,${encodeURIComponent(JSON.stringify(dataToDisplay, null, 2))}`}
-                download={`analisis-${dataToDisplay.filename}.json`}
-                className="inline-block bg-blue-600 text-white px-4 py-2 rounded mt-2 ml-4"
-              >
-              Exportar análisis completo (.json)
-              </a>
-            </div>
+        {/* Historial */}
+        <section className="bg-white p-6 rounded shadow">
+          <h2 className="text-xl font-semibold mb-4">🕓 Historial de análisis anteriores</h2>
+          {history.length === 0 ? (
+            <p className="text-gray-500 italic">No hay análisis guardados.</p>
+          ) : (
+            <ul className="list-disc pl-5 space-y-1">
+              {history.map((entry) => (
+                <li key={entry.id}>
+                  <button
+                    onClick={() => {
+                      setSelectedEntry(entry);
+                      setResponse(null);
+                    }}
+                    className="text-blue-600 hover:underline text-sm"
+                  >
+                    {new Date(entry.timestamp).toLocaleDateString()} — {entry.filename}
+                  </button>
+                </li>
+              ))}
+            </ul>
           )}
+        </section>
 
-          <div className="mb-6">
-            <h3 className="text-md font-semibold mb-2">Vulnerabilidades detectadas</h3>
+        {/* Resultados */}
+        {dataToDisplay && (
+          <section className="bg-white p-6 rounded shadow">
+            <h2 className="text-xl font-semibold mb-4">📊 Resultados del análisis</h2>
+            <h3 className="font-medium text-gray-700 mb-2">Archivo: {dataToDisplay.filename}</h3>
 
-            {/* Filtro de severidad */}
+            {dataToDisplay.suggested_content && (
+              <div className="mb-8">
+                <h4 className="text-md font-semibold mb-2">📄 Comparativa original vs sugerido</h4>
+                <div className="border rounded shadow overflow-auto">
+                  <ReactDiffViewer
+                    oldValue={dataToDisplay.original_content}
+                    newValue={dataToDisplay.suggested_content}
+                    splitView={true}
+                    compareMethod={DiffMethod.LINES}
+                    showDiffOnly={false}
+                    leftTitle="Original"
+                    rightTitle="Sugerido"
+                  />
+                </div>
+                <div className="mt-4 space-x-4">
+                  <a
+                    href={`data:text/plain;charset=utf-8,${encodeURIComponent(dataToDisplay.suggested_content)}`}
+                    download={`remediado-${dataToDisplay.filename}`}
+                    className="inline-block bg-green-600 text-white px-4 py-2 rounded"
+                  >
+                    Descargar versión remediada
+                  </a>
+                  <a
+                    href={`data:application/json;charset=utf-8,${encodeURIComponent(JSON.stringify(dataToDisplay, null, 2))}`}
+                    download={`analisis-${dataToDisplay.filename}.json`}
+                    className="inline-block bg-blue-600 text-white px-4 py-2 rounded"
+                  >
+                    Exportar análisis (.json)
+                  </a>
+                </div>
+              </div>
+            )}
+
+            {/* Filtro */}
             <div className="mb-4">
               <label className="text-sm font-medium text-gray-700 mr-2">Filtrar por severidad:</label>
               <select
@@ -160,6 +187,7 @@ function App() {
               </select>
             </div>
 
+            {/* Tabla */}
             {filteredFindings.length === 0 ? (
               <p className="text-gray-500 italic">No se encontraron problemas con esta severidad.</p>
             ) : (
@@ -178,25 +206,21 @@ function App() {
                   </thead>
                   <tbody>
                     {filteredFindings.map((item: any, i: number) => (
-                      <tr key={i} className="border-b">
+                      <tr key={i} className="border-b hover:bg-gray-50">
                         <td className="p-2 align-top">{item.tool}</td>
                         <td className="p-2 align-top">{item.file}</td>
                         <td className="p-2 align-top">{item.line ?? "-"}</td>
                         <td className="p-2 align-top">{item.rule}</td>
-                        <td
-                          className={`p-2 align-top font-bold ${
-                            item.severity?.toLowerCase() === 'critical'
-                              ? 'text-red-600'
-                              : item.severity?.toLowerCase() === 'high'
-                              ? 'text-orange-600'
-                              : item.severity?.toLowerCase() === 'medium'
-                              ? 'text-yellow-600'
-                              : item.severity?.toLowerCase() === 'low'
-                              ? 'text-green-600'
-                              : 'text-gray-700'
-                          }`}
-                        >
-                          {item.severity}
+                        <td className={`p-2 align-top font-bold text-sm`}>
+                          <span className={`inline-block px-2 py-1 rounded text-white
+                            ${item.severity?.toLowerCase() === 'critical' ? 'bg-red-600' :
+                              item.severity?.toLowerCase() === 'high' ? 'bg-orange-500' :
+                              item.severity?.toLowerCase() === 'medium' ? 'bg-yellow-500' :
+                              item.severity?.toLowerCase() === 'low' ? 'bg-green-500' :
+                              'bg-gray-400'
+                            }`}>
+                            {item.severity}
+                          </span>
                         </td>
                         <td className="p-2 align-top whitespace-pre-wrap">{item.message}</td>
                         <td className="p-2 align-top">{item.fix ?? "-"}</td>
@@ -206,9 +230,9 @@ function App() {
                 </table>
               </div>
             )}
-          </div>
-        </div>
-      )}
+          </section>
+        )}
+      </div>
     </div>
   );
 }
