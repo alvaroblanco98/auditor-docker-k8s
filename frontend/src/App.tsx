@@ -65,7 +65,7 @@ function App() {
       <div className="min-h-screen bg-gray-50 font-sans text-gray-800 px-4 py-6">
         <header className="mb-6 border-b pb-4 flex items-center justify-between">
           <h1 className="text-3xl font-bold text-blue-700 flex items-center gap-2">
-            <FaBug /> Docker & Kubernetes Auditor
+            Docker & Kubernetes Auditor
           </h1>
         </header>
 
@@ -93,7 +93,7 @@ function App() {
 
           {/* Subida de archivo */}
           <section className="bg-white p-6 rounded shadow">
-            <h2 className="text-xl font-semibold mb-4">📁 Subir nuevo archivo</h2>
+            <h2 className="text-xl font-semibold mb-4">Subir nuevo archivo</h2>
             <div className="flex items-center gap-4">
               <input type="file" onChange={e => setFile(e.target.files?.[0] || null)} />
               <button
@@ -109,7 +109,7 @@ function App() {
 
           {/* Historial */}
           <section className="bg-white p-6 rounded shadow">
-            <h2 className="text-xl font-semibold mb-4">🕓 Historial de análisis anteriores</h2>
+            <h2 className="text-xl font-semibold mb-4">Historial de análisis anteriores</h2>
             {history.length === 0 ? (
               <p className="text-gray-500 italic">No hay análisis guardados.</p>
             ) : (
@@ -134,12 +134,12 @@ function App() {
           {/* Resultados */}
           {dataToDisplay && (
             <section className="bg-white p-6 rounded shadow">
-              <h2 className="text-xl font-semibold mb-4">📊 Resultados del análisis</h2>
+              <h2 className="text-xl font-semibold mb-4">Resultados del análisis</h2>
               <h3 className="font-medium text-gray-700 mb-2">Archivo: {dataToDisplay.filename}</h3>
 
               {dataToDisplay.suggested_content && (
                 <div className="mb-8">
-                  <h4 className="text-md font-semibold mb-2">📄 Comparativa original vs sugerido</h4>
+                  <h4 className="text-md font-semibold mb-2">Comparativa original vs sugerido</h4>
                   <div className="border rounded shadow overflow-auto">
                     <ReactDiffViewer
                       oldValue={dataToDisplay.original_content}
