@@ -15,6 +15,7 @@ function App() {
     fetchHistory();
   }, []);
 
+  // Cargar historial de análisis
   const fetchHistory = async () => {
     try {
       const res = await fetch("http://localhost:8000/history/");
@@ -25,6 +26,7 @@ function App() {
     }
   };
 
+  // Enviar archivo para análisis y recibir respuesta 
   const handleUpload = async () => {
     if (!file) return;
 
@@ -54,7 +56,10 @@ function App() {
     }
   };
 
+  // Mostrar datos del análisis seleccionado o entrada del historial
   const dataToDisplay = response || selectedEntry;
+
+  // Filtrar vulnerabilidades por severidad
   const findings = dataToDisplay?.normalized_findings || [];
   const filteredFindings = findings.filter((item: any) =>
     severityFilter === "all" ? true : item.severity?.toLowerCase() === severityFilter
@@ -136,6 +141,7 @@ function App() {
               <h2 className="text-xl font-semibold mb-4">Resultados del análisis</h2>
               <h3 className="font-medium text-gray-700 mb-2">Archivo: {dataToDisplay.filename}</h3>
 
+              {/* Visualización de diferencias entre original y sugerido */}
               {dataToDisplay.suggested_content && (
                 <div className="mb-8">
                   <h4 className="text-md font-semibold mb-2">Comparativa original vs sugerido</h4>
@@ -150,6 +156,8 @@ function App() {
                       rightTitle="Sugerido"
                     />
                   </div>
+
+                  {/* Botones de descarga */}
                   <div className="mt-4 space-x-4">
                     <a
                       href={`data:text/plain;charset=utf-8,${encodeURIComponent(dataToDisplay.suggested_content)}`}
@@ -169,7 +177,7 @@ function App() {
                 </div>
               )}
 
-              {/* Filtro */}
+              {/* Filtro por severidad */}
               <div className="mb-4">
                 <label className="text-sm font-medium text-gray-700 mr-2">Filtrar por severidad:</label>
                 <select
@@ -186,7 +194,7 @@ function App() {
                 </select>
               </div>
 
-              {/* Tabla */}
+              {/* Tabla de vulnerabilidades */}
               {filteredFindings.length === 0 ? (
                 <p className="text-gray-500 italic">No se encontraron problemas con esta severidad.</p>
               ) : (
