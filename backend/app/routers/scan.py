@@ -19,6 +19,23 @@ from app.utils.suggestions import (
 router = APIRouter()
 
 def extract_image_name(filename: str, content: str) -> str | None:
+    """
+    Extrae el nombre de la imagen desde el contenido del archivo, 
+    según del tipo que sea.
+
+    Args:
+    -----------
+    filename : str
+        Nombre del archivo subido.
+    content : str
+        Contenido del archivo.
+
+    Returns:
+    --------
+    str | None
+        El nombre de la imagen encontrada, o None si no se ha detectado.
+    """
+
     if "Dockerfile" in filename:
         match = re.search(r'^FROM\s+([\w\-./:]+)', content, re.MULTILINE)
     elif filename.endswith(".yaml") or filename.endswith(".yml") or "compose" in filename:
@@ -29,6 +46,34 @@ def extract_image_name(filename: str, content: str) -> str | None:
 
 @router.post("/scan/")
 async def scan_file(file: UploadFile = File(...)):
+    """
+    Endpoint principal de análisis de archivos.
+
+    Flujo:
+    ------
+    1. Guarda el archivo.
+    2. Detecta el tipo de archivo (Dockerfile, docker-compose o manifiesto de Kubernetes).
+    3. Ejecuta la herramienta de análisis correspondiente:
+        - hadolint (Dockerfile)
+        - dclint (docker-compose.yaml)
+        - kube-linter (manifiestos Kubernetes)
+    4. Si hay imagen asociada, ejecuta trivy para detectar vulnerabilidades.
+    5. Estandariza resultados.
+    6. Genera una versión remediada.
+    7. Devuelve resultados y sugerencias.
+
+    Returns:
+    --------
+    dict
+        Contiene:
+        - filename
+        - original_content
+        - tools_run
+        - results
+        - normalized_findings
+        - suggested_content (archivo modificado con buenas prácticas)
+    """
+
     filename = file.filename
     suffix = os.path.splitext(filename)[1]
 

@@ -1,4 +1,34 @@
+""""
+parsers.py
+
+Este módulo contiene funciones de normalización de resultados
+de diferentes herramientas de análisis (Hadolint, Trivy, Kube-linter, DClint)
+a un formato común.
+
+Formato normalizado:
+{
+    "tool": str,        # Nombre de la herramienta que generó el hallazgo
+    "file": str,        # Nombre del archivo analizado
+    "rule": str,        # Regla o identificador de la vulnerabilidad
+    "severity": str,    # Severidad (critical, high, medium, low, etc.)
+    "message": str,     # Mensaje o descripción del hallazgo
+    "line": int | None, # Número de línea si aplica
+    "fix": str | None   # Sugerencia de remediación o versión corregida
+}
+"""
+
 def normalize_hadolint(data: list, filename: str) -> list:
+    """
+    Estandariza la salida de Hadolint a un formato común.
+
+    Args:
+        data (list): Lista con la salida JSON de Hadolint.
+        filename (str): Nombre del archivo analizado.
+
+    Returns:
+        list: Lista de resultados normalizados.
+    """
+
     if not isinstance(data, list):
         return []
 
@@ -17,6 +47,16 @@ def normalize_hadolint(data: list, filename: str) -> list:
 
 
 def normalize_trivy(data: list, filename: str) -> list:
+    """
+    Normaliza la salida de Trivy a un formato común.
+
+    Args:
+        data (list): Lista con vulnerabilidades detectadas por trivy.
+        filename (str): Nombre del archivo o imagen analizada.
+
+    Returns:
+        list: Lista de resultados normalizados.
+    """
     if not isinstance(data, list):
         return []
 
@@ -35,6 +75,17 @@ def normalize_trivy(data: list, filename: str) -> list:
 
 
 def normalize_kubelinter(data: dict, filename: str) -> list:
+    """
+    Estandariza la salida de Kube-linter a un formato común.
+
+    Args:
+        data (dict): Diccionario con el resultado JSON de kube-linter.
+        filename (str): Nombre del archivo analizado.
+
+    Returns:
+        list: Lista de resultados normalizados.
+    """
+
     if not isinstance(data, dict):
         return []
 
@@ -53,6 +104,16 @@ def normalize_kubelinter(data: dict, filename: str) -> list:
 
 
 def normalize_dclint(data: list, filename: str) -> list:
+    """
+    Estandariza la salida de DClint a un formato común.
+
+    Args:
+        data (list): Lista con la salida JSON de dclint.
+        filename (str): Nombre del archivo analizado.
+
+    Returns:
+        list: Lista de resultados normalizados.
+    """
     if not isinstance(data, list):
         return []
 
