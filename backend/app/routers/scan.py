@@ -10,13 +10,11 @@ from app.utils.parsers import (
     normalize_kubelinter,
     normalize_dclint,
 )
-
 from app.utils.suggestions import (
     suggest_remediations_dockerfile,
-    suggest_remediations_kubernetes_yaml,
-)   
-
-from app.utils.storage import save_result
+    suggest_remediations_docker_compose,
+    suggest_remediations_kubernetes_yaml
+)
 
 router = APIRouter()
 
@@ -40,13 +38,6 @@ async def scan_file(file: UploadFile = File(...)):
         tmp.flush()
 
         decoded_content = content.decode()
-
-        suggested_content = None
-        if "Dockerfile" in filename or filename.endswith(".Dockerfile"):
-            suggested_content = suggest_remediations_dockerfile(decoded_content)
-        elif filename.endswith(".yaml") or filename.endswith(".yml"):
-            suggested_content = suggest_remediations_kubernetes_yaml(decoded_content)
-
         results = {}
 
         if "Dockerfile" in filename or filename.endswith(".Dockerfile"):
@@ -61,7 +52,7 @@ async def scan_file(file: UploadFile = File(...)):
 
         elif "docker-compose" in filename or filename.endswith("compose.yaml"):
             output = subprocess.run(
-                ["dclint", "--formatter", "json", tmp.name],
+                ["dclint", "-f", "json", tmp.name],
                 capture_output=True, text=True
             )
             try:
@@ -115,20 +106,20 @@ async def scan_file(file: UploadFile = File(...)):
         if "dclint" in results and isinstance(results["dclint"], list):
             normalized += normalize_dclint(results["dclint"], filename)
 
-        save_result({
-            "filename": filename,
-            "original_content": decoded_content,
-            "suggested_content": suggested_content,
-            "tools_run": list(results.keys()),
-            "results": results,
-            "normalized_findings": normalized
-        })
+        if "Dockerfile" in filename or filename.endswith(".Dockerfile"):
+            suggested_content = suggest_remediations_dockerfile(decoded_content)
+        elif "docker-compose" in filename or filename.endswith("compose.yaml"):
+            suggested_content = suggest_remediations_docker_compose(decoded_content)
+        elif filename.endswith(".yaml") or filename.endswith(".yml"):
+            suggested_content = suggest_remediations_kubernetes_yaml(decoded_content)
+        else:
+            suggested_content = ""
 
         return {
             "filename": filename,
             "original_content": decoded_content,
-            "suggested_content": suggested_content,
             "tools_run": list(results.keys()),
             "results": results,
-            "normalized_findings": normalized          
+            "normalized_findings": normalized,
+            "suggested_content": suggested_content
         }
