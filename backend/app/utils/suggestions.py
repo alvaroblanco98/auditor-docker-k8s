@@ -86,6 +86,16 @@ def suggest_remediations_docker_compose(content: str) -> str:
         str: Contenido modificado con sugerencias aplicadas.
     """
 
+def suggest_remediations_docker_compose(content: str) -> str:
+    """
+    Genera un docker-compose 'remediado' con buenas prácticas:
+      - Evitar :latest en imágenes
+      - Añadir restart: unless-stopped si no existe
+      - Habilitar read_only si no existe
+      - Forzar usuario no-root si no existe (1000:1000)
+      - Establecer límites de recursos si no existen (deploy.resources)
+    La función es defensiva ante compos que no sigan al 100% el esquema.
+    """
     try:
         parsed = yaml.safe_load(content)
     except Exception:
@@ -94,33 +104,48 @@ def suggest_remediations_docker_compose(content: str) -> str:
     if not isinstance(parsed, dict):
         return content
 
-    services = parsed.get("services", {})
-    for service in services.items():
-        
-        image = service.get("image", "")
-        if ":latest" in image:
+    services = parsed.get("services") or {}
+    if not isinstance(services, dict):
+        return yaml.safe_dump(parsed, default_flow_style=False, sort_keys=False)
+
+    for service_name, service in services.items():
+        if not isinstance(service, dict):
+            continue
+
+        image = service.get("image")
+        if isinstance(image, str) and ":latest" in image:
             service["image"] = image.replace(":latest", ":<TAG>")
-            service.setdefault("x-suggestions", []).append("Evita usar latest, usa una versión fija.")
+            service.setdefault("x-suggestions", []).append(
+                "Evita usar 'latest', usa una etiqueta de versión fija."
+            )
 
-        if "restart" not in service:
-            service["restart"] = "unless-stopped"
+        service.setdefault("restart", "unless-stopped")
 
-        if "read_only" not in service:
-            service["read_only"] = True
+        service.setdefault("read_only", True)
 
         if "user" not in service:
             service["user"] = "1000:1000"
 
-        deploy_cfg = service.get("deploy", {})
-        if "resources" not in deploy_cfg:
-            deploy_cfg["resources"] = {
-                "limits": {"cpus": "0.50", "memory": "256M"},
-                "reservations": {"cpus": "0.25", "memory": "128M"}
-            }
+        deploy_cfg = service.get("deploy")
+        if not isinstance(deploy_cfg, dict):
+            deploy_cfg = {}
+
+        resources = deploy_cfg.get("resources")
+        if not isinstance(resources, dict):
+            resources = {}
+
+        if "limits" not in resources:
+            resources["limits"] = {"cpus": "0.50", "memory": "256M"}
+        if "reservations" not in resources:
+            resources["reservations"] = {"cpus": "0.25", "memory": "128M"}
+
+        deploy_cfg["resources"] = resources
         service["deploy"] = deploy_cfg
 
+        services[service_name] = service
+
     parsed["services"] = services
-    return yaml.dump(parsed, default_flow_style=False)
+    return yaml.safe_dump(parsed, default_flow_style=False, sort_keys=False)
 
 
 

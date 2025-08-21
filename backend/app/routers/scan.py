@@ -16,6 +16,8 @@ from app.utils.suggestions import (
     suggest_remediations_kubernetes_yaml
 )
 
+from app.utils.storage import save_result
+
 router = APIRouter()
 
 def extract_image_name(filename: str, content: str) -> str | None:
@@ -159,6 +161,15 @@ async def scan_file(file: UploadFile = File(...)):
             suggested_content = suggest_remediations_kubernetes_yaml(decoded_content)
         else:
             suggested_content = ""
+
+        save_result({
+            "filename": filename,
+            "original_content": decoded_content,
+            "suggested_content": suggested_content,
+            "tools_run": list(results.keys()),
+            "results": results,
+            "normalized_findings": normalized
+        })
 
         return {
             "filename": filename,
